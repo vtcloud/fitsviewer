@@ -1,3 +1,6 @@
+"""
+Simple display window to show the headers of a FITS file
+"""
 import sys
 from pprint import pprint
 from PyQt6.QtWidgets import (
@@ -56,7 +59,7 @@ class TextViewer(QMainWindow):
         # Show a confirmation message
         QMessageBox.information(self, "Copied", "All text has been copied to the clipboard.")
 
-def main():
+def fitsviewer():
     """Parses command-line arguments and runs the application."""
     import argparse
     

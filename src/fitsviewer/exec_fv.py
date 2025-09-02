@@ -7,7 +7,7 @@ __updated__ = '20250902'
 __version__ = '0.1'
 __author__ = 'V. Tolls, CfA | Harvard & Smithsonian'
 
-from .fitsviewer import main
+from .fitsviewer import fitsviewer
 import argparse
 import textwrap
 import importlib
