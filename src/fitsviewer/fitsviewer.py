@@ -66,7 +66,7 @@ class TextViewer(QMainWindow):
         # Show a confirmation message
         QMessageBox.information(self, "Copied", "All text has been copied to the clipboard.")
 
-def fitsviewer():
+def fitsviewer(args=None):
     """Parses command-line arguments and runs the application."""
     import argparse
     

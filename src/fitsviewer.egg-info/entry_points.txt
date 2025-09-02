@@ -1,2 +1,2 @@
 [console_scripts]
-fv = fitsviewer.exec_fv:exec_fv
+fv = fitsviewer.exec_fv:execfv
