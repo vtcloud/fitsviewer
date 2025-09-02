@@ -10,6 +10,13 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QClipboard, QAction, QKeySequence
 from PyQt6.QtCore import Qt
 
+
+__date__ = '09/02/2025'
+__updated__ = '20250902'
+__version__ = '0.1'
+__author__ = 'V. Tolls, CfA | Harvard & Smithsonian'
+
+
 class TextViewer(QMainWindow):
     """A PyQt6 window for displaying scrollable text."""
     
@@ -125,4 +132,4 @@ def fitsviewer():
     sys.exit(app.exec())
 
 if __name__ == "__main__":
-    main()
+    fitsviewer()

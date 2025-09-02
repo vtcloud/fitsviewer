@@ -44,4 +44,4 @@ def execfv():
                         help=f'{tpipe} input file.')
     args = parser.parse_args()
 
-    main(args=args)
+    fitsviewer(args=args)
