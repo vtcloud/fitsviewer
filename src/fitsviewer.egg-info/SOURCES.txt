@@ -1,0 +1,15 @@
+LICENSE
+README.rst
+pyproject.toml
+requirements.txt
+setup.py
+src/fitsviewer/__init__.py
+src/fitsviewer/__meta__.py
+src/fitsviewer/exec_fv.py
+src/fitsviewer/fits_viewer.py
+src/fitsviewer.egg-info/PKG-INFO
+src/fitsviewer.egg-info/SOURCES.txt
+src/fitsviewer.egg-info/dependency_links.txt
+src/fitsviewer.egg-info/entry_points.txt
+src/fitsviewer.egg-info/requires.txt
+src/fitsviewer.egg-info/top_level.txt
