@@ -8,5 +8,5 @@ version = "0.1"
 author = "vtcloud"
 author_email = "vtolls@cfa.harvard.edu"
 description = "fitsviewer"  # One-liner
-url = "https://github.com/vtcloud/SPHEREx_Ices_Simulator"  # your project homepage
+url = "https://github.com/vtcloud/fitsviewer"  # your project homepage
 license = "CC0 1.0 Universal"  # See https://choosealicense.com
