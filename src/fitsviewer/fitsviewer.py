@@ -2,13 +2,17 @@
 Simple display window to show the headers of a FITS file
 """
 import sys
-from pprint import pprint
+import os
+import pprint
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QVBoxLayout, QWidget,
     QMessageBox
 )
+from PyQt6.QtGui import QFont
 from PyQt6.QtGui import QClipboard, QAction, QKeySequence
 from PyQt6.QtCore import Qt
+
+from astropy.io import fits
 
 
 __date__ = '09/02/2025'
@@ -22,8 +26,8 @@ class TextViewer(QMainWindow):
     
     def __init__(self, text, title, width, height):
         super().__init__()
-        self.setWindowTitle(title)
-        self.setGeometry(100, 100, width, height)
+        self.setWindowTitle('fitsviewer')
+        self.setGeometry(50, 100, width, height)
 
         # Main widget and layout
         central_widget = QWidget()
@@ -35,6 +39,10 @@ class TextViewer(QMainWindow):
         self.text_edit.setReadOnly(True)  # Make the text area read-only
         self.text_edit.setText(text)
         layout.addWidget(self.text_edit)
+        # Create a QFont object
+        font = QFont("Courier New", 12) # Set font family 
+        # Apply the font to the QTextEdit
+        self.text_edit.setFont(font)
         
         # Add a "Copy All" menu action
         self._setup_menu()
@@ -45,7 +53,7 @@ class TextViewer(QMainWindow):
         file_menu = menu_bar.addMenu("File")
         
         copy_action = QAction("Copy All", self)
-        copy_action.setShortcut(QKeySequence("Ctrl+Shift+C"))
+        copy_action.setShortcut(QKeySequence("Cmd+A"))
         copy_action.setStatusTip("Copy all text to the clipboard")
         copy_action.triggered.connect(self.copy_all_text)
         
@@ -53,7 +61,7 @@ class TextViewer(QMainWindow):
         
         # Add a close action
         close_action = QAction("Close", self)
-        close_action.setShortcut(QKeySequence("Ctrl+W"))
+        close_action.setShortcut(QKeySequence("Cmd+Q"))
         close_action.setStatusTip("Close the window")
         close_action.triggered.connect(self.close)
         file_menu.addAction(close_action)
@@ -83,13 +91,13 @@ def fitsviewer(args=None):
     parser.add_argument(
         "-w", "--width", 
         type=int, 
-        default=600, 
+        default=800, 
         help="Set the window width in pixels."
     )
     parser.add_argument(
         "-H", "--height", 
         type=int, 
-        default=400, 
+        default=600, 
         help="Set the window height in pixels."
     )
     parser.add_argument(
@@ -106,8 +114,11 @@ def fitsviewer(args=None):
 
     app = QApplication(sys.argv)
     
+    ipath = ''
+    
     # Get text from file if specified, otherwise use message
     if args.file:
+        ifile = args.file
         try:
             with fits.open(os.path.join(ipath, ifile)) as hdul:
                 # hdul.info()
