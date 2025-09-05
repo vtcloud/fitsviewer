@@ -6,7 +6,7 @@ import os
 import pprint
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QVBoxLayout, QWidget,
-    QMessageBox
+    QMessageBox, QPushButton, QHBoxLayout, QVBoxLayout, QSizePolicy
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtGui import QClipboard, QAction, QKeySequence
@@ -31,18 +31,36 @@ class TextViewer(QMainWindow):
 
         # Main widget and layout
         central_widget = QWidget()
+        bottom_widget = QPushButton(text="Quit")
+        
         self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        main_layout = QVBoxLayout(central_widget)
+
+        # horizontal layout for the bottom part
+        bottom_layout = QHBoxLayout()
+        # Add a stretchable space to push the button to the right
+        bottom_layout.addStretch(1) 
+
 
         # Text display area
         self.text_edit = QTextEdit()
+        self.text_edit.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding
+        )
         self.text_edit.setReadOnly(True)  # Make the text area read-only
         self.text_edit.setText(text)
-        layout.addWidget(self.text_edit)
+        main_layout.addWidget(self.text_edit)
+        
         # Create a QFont object
         font = QFont("Courier New", 12) # Set font family 
-        # Apply the font to the QTextEdit
         self.text_edit.setFont(font)
+        
+        # Add a quit button 
+        self.quit_button = QPushButton("Quit")
+        self.quit_button.clicked.connect(QApplication.instance().quit)
+        bottom_layout.addWidget(self.quit_button)
+        
+        main_layout.addLayout(bottom_layout)
         
         # Add a "Copy All" menu action
         self._setup_menu()
@@ -74,20 +92,17 @@ class TextViewer(QMainWindow):
         # Show a confirmation message
         QMessageBox.information(self, "Copied", "All text has been copied to the clipboard.")
 
+        
+
 def fitsviewer(args=None):
     """Parses command-line arguments and runs the application."""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="Display scrollable text in a PyQt6 window.",
+        description="fitsviewer to view the headers of fits files.",
         formatter_class=argparse.RawTextHelpFormatter
     )
     
-    parser.add_argument(
-        "-t", "--title", 
-        default="Text Viewer", 
-        help="Set the window title."
-    )
     parser.add_argument(
         "-w", "--width", 
         type=int, 
@@ -102,12 +117,7 @@ def fitsviewer(args=None):
     )
     parser.add_argument(
         "-f", "--file", 
-        help="Read text from a specified file. Overrides -m/--message."
-    )
-    parser.add_argument(
-        "-m", "--message", 
-        default="Default display text.", 
-        help="Set the default text message to display.\nIgnored if a file is provided with -f."
+        help="Full path to fits file"
     )
     
     args = parser.parse_args()
@@ -122,10 +132,16 @@ def fitsviewer(args=None):
         try:
             with fits.open(os.path.join(ipath, ifile)) as hdul:
                 # hdul.info()
-                hdr0 = hdul[0].header
-                hdr1 = hdul[1].header
-            
-                text_content = pprint.pformat(hdr0)
+                n_hdr = len(hdul)
+                hdr_text = 'File: %s\nNumber of Headers: %i\n\n'%(ifile, n_hdr)
+                
+                for i in range(n_hdr):
+                    hdr = hdul[i].header
+                    
+                
+                    hdr_text += 'Header %i:\n\n'%(i)
+                    hdr_text += pprint.pformat(hdr)
+                    hdr_text += '\n\n##################################################\n\n'
         except FileNotFoundError:
             QMessageBox.critical(None, "Error", f"File not found: {args.file}")
             sys.exit(1)
@@ -133,8 +149,8 @@ def fitsviewer(args=None):
         text_content = args.message
         
     window = TextViewer(
-        text=text_content, 
-        title=args.title, 
+        text=hdr_text, 
+        title='fitsviewer', 
         width=args.width, 
         height=args.height
     )
