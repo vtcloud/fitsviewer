@@ -4,6 +4,8 @@ Simple display window to show the headers of a FITS file
 import sys
 import os
 import pprint
+import io
+from contextlib import redirect_stdout
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QVBoxLayout, QWidget,
     QMessageBox, QPushButton, QHBoxLayout, QVBoxLayout, QSizePolicy,
@@ -103,7 +105,7 @@ class TextViewer(QMainWindow):
         # to be added
         ifile = QFileDialog.getOpenFileName(self,
                 "Select FITS File", path, "FITS-Files (*.fits *.fit)")
-        hdr_text = load_headers(ifile)
+        hdr_text = load_headers(ifile[0])
         self.text_edit.setText(hdr_text)
 
         
@@ -173,8 +175,12 @@ def load_headers(ifile):
         hdr_text = ''
         with fits.open(ifile) as hdul:
             # hdul.info()
+            f = io.StringIO()
+            with redirect_stdout(f):
+                hdul.info()
+            hdul_info = f.getvalue()
             n_hdr = len(hdul)
-            hdr_text = 'File: %s\nNumber of Headers: %i\n\n'%(ifile, n_hdr)
+            hdr_text = 'File: %s\n\n'%(ifile) + hdul_info + '\n\n'
             
             for i in range(n_hdr):
                 hdr = hdul[i].header
