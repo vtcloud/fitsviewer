@@ -6,8 +6,8 @@ import os
 import pprint
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QVBoxLayout, QWidget,
-    QMessageBox, QPushButton, QHBoxLayout, QVBoxLayout, QSizePolicy
-)
+    QMessageBox, QPushButton, QHBoxLayout, QVBoxLayout, QSizePolicy,
+    QFileDialog)
 from PyQt6.QtGui import QFont
 from PyQt6.QtGui import QClipboard, QAction, QKeySequence
 from PyQt6.QtCore import Qt
@@ -20,6 +20,7 @@ __updated__ = '20250902'
 __version__ = '0.1'
 __author__ = 'V. Tolls, CfA | Harvard & Smithsonian'
 
+path = './'
 
 class TextViewer(QMainWindow):
     """A PyQt6 window for displaying scrollable text."""
@@ -74,8 +75,14 @@ class TextViewer(QMainWindow):
         copy_action.setShortcut(QKeySequence("Cmd+A"))
         copy_action.setStatusTip("Copy all text to the clipboard")
         copy_action.triggered.connect(self.copy_all_text)
+
+        load_action = QAction("Load File", self)
+        load_action.setShortcut(QKeySequence("Cmd+F"))
+        load_action.setStatusTip("Load a File")
+        load_action.triggered.connect(self.load_file)
         
         file_menu.addAction(copy_action)
+        file_menu.addAction(load_action)
         
         # Add a close action
         close_action = QAction("Close", self)
@@ -92,12 +99,24 @@ class TextViewer(QMainWindow):
         # Show a confirmation message
         QMessageBox.information(self, "Copied", "All text has been copied to the clipboard.")
 
+    def load_file(self):
+        # to be added
+        ifile = QFileDialog.getOpenFileName(self,
+                "Select FITS File", path, "FITS-Files (*.fits *.fit)")
+        hdr_text = load_headers(ifile)
+        self.text_edit.setText(hdr_text)
+
         
 
 def fitsviewer(args=None):
     """Parses command-line arguments and runs the application."""
     import argparse
     
+    parser = argparse.ArgumentParser(
+        description="fitsviewer to view the headers of fits files.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+     
     parser = argparse.ArgumentParser(
         description="fitsviewer to view the headers of fits files.",
         formatter_class=argparse.RawTextHelpFormatter
@@ -128,25 +147,16 @@ def fitsviewer(args=None):
     
     # Get text from file if specified, otherwise use message
     if args.file:
+        global path
+        
         ifile = args.file
-        try:
-            with fits.open(os.path.join(ipath, ifile)) as hdul:
-                # hdul.info()
-                n_hdr = len(hdul)
-                hdr_text = 'File: %s\nNumber of Headers: %i\n\n'%(ifile, n_hdr)
-                
-                for i in range(n_hdr):
-                    hdr = hdul[i].header
-                    
-                
-                    hdr_text += 'Header %i:\n\n'%(i)
-                    hdr_text += pprint.pformat(hdr)
-                    hdr_text += '\n\n##################################################\n\n'
-        except FileNotFoundError:
-            QMessageBox.critical(None, "Error", f"File not found: {args.file}")
-            sys.exit(1)
+        head, tail = os.path.split(ifile)
+        path = head
+
+        hdr_text = load_headers(ifile)
     else:
-        text_content = args.message
+        text_content = 'Please execute with: fv -f <path-to-fits-file>'
+        hdr_text = 'No file loaded!'
         
     window = TextViewer(
         text=hdr_text, 
@@ -157,6 +167,27 @@ def fitsviewer(args=None):
     window.show()
     
     sys.exit(app.exec())
+
+def load_headers(ifile):
+    try:
+        hdr_text = ''
+        with fits.open(ifile) as hdul:
+            # hdul.info()
+            n_hdr = len(hdul)
+            hdr_text = 'File: %s\nNumber of Headers: %i\n\n'%(ifile, n_hdr)
+            
+            for i in range(n_hdr):
+                hdr = hdul[i].header
+                
+            
+                hdr_text += 'Header %i:\n\n'%(i)
+                hdr_text += pprint.pformat(hdr)
+                hdr_text += '\n\n##################################################\n\n'
+        return hdr_text
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"File not found: {args.file}")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     fitsviewer()
