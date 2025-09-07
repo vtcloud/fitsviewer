@@ -114,42 +114,59 @@ def fitsviewer(args=None):
     """Parses command-line arguments and runs the application."""
     import argparse
     
-    parser = argparse.ArgumentParser(
-        description="fitsviewer to view the headers of fits files.",
-        formatter_class=argparse.RawTextHelpFormatter
-    )
-     
-    parser = argparse.ArgumentParser(
-        description="fitsviewer to view the headers of fits files.",
-        formatter_class=argparse.RawTextHelpFormatter
-    )
+    # parser = argparse.ArgumentParser(
+    #     description="fitsviewer to view the headers of fits files.",
+    #     formatter_class=argparse.RawTextHelpFormatter
+    # )
+    #
+    # parser.add_argument('filename',
+    #     #nargs='?',
+    #     default=None,
+    #     type=str,
+    # )
+
+    # parser.add_argument(
+    #     "-w", "--width", 
+    #     type=int, 
+    #     default=800, 
+    #     help="Set the window width in pixels."
+    # )
+    # parser.add_argument(
+    #     "-H", "--height", 
+    #     type=int, 
+    #     default=600, 
+    #     help="Set the window height in pixels."
+    # )
+    # parser.add_argument(
+    #     "-f", "--file", 
+    #     help="Full path to fits file"
+    # )
     
-    parser.add_argument(
-        "-w", "--width", 
-        type=int, 
-        default=800, 
-        help="Set the window width in pixels."
-    )
-    parser.add_argument(
-        "-H", "--height", 
-        type=int, 
-        default=600, 
-        help="Set the window height in pixels."
-    )
-    parser.add_argument(
-        "-f", "--file", 
-        help="Full path to fits file"
-    )
+    # parser.add_argument(
+    #     'ifile',
+    #     #nargs='?',
+    #     type=argparse.FileType('r'),
+    # )
     
-    args = parser.parse_args()
+    # args, uargs = parser.parse_known_args()
+
+    print(args.filename)
 
     app = QApplication(sys.argv)
     
     ipath = ''
     
+    global path
     # Get text from file if specified, otherwise use message
-    if args.file:
-        global path
+    if args.filename:
+        
+        ifile = args.filename
+        head, tail = os.path.split(ifile)
+        path = head
+
+        hdr_text = load_headers(ifile)
+    elif args.file:
+        #global path
         
         ifile = args.file
         head, tail = os.path.split(ifile)
@@ -191,7 +208,7 @@ def load_headers(ifile):
                 hdr_text += '\n\n##################################################\n\n'
         return hdr_text
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"File not found: {args.file}")
+        QMessageBox.critical(None, "Error", f"File not found: {ifile}")
         sys.exit(1)
 
 

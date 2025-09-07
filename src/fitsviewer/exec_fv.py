@@ -10,7 +10,6 @@ __author__ = 'V. Tolls, CfA | Harvard & Smithsonian'
 from .fitsviewer import fitsviewer
 import argparse
 import textwrap
-import importlib
 
 
 class bcolors:
@@ -42,6 +41,26 @@ def execfv():
             '''))
     parser.add_argument('--File', '-f', nargs='?', type=str,
                         help=f'{tpipe} input file.')
+    
+    parser.add_argument(
+        "-w", "--width", 
+        type=int, 
+        default=800, 
+        help="Set the window width in pixels."
+    )
+    
+    parser.add_argument(
+        "-H", "--height", 
+        type=int, 
+        default=600, 
+        help="Set the window height in pixels."
+    )
+
+    parser.add_argument('filename',
+        #nargs='?',
+        default=None,
+        type=str,
+    )
     args = parser.parse_args()
 
     fitsviewer(args=args)
