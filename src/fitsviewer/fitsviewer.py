@@ -15,6 +15,8 @@ from PyQt6.QtGui import QClipboard, QAction, QKeySequence
 from PyQt6.QtCore import Qt
 
 from astropy.io import fits
+import argparse
+import textwrap
 
 
 __date__ = '09/02/2025'
@@ -110,47 +112,45 @@ class TextViewer(QMainWindow):
 
         
 
-def fitsviewer(args=None):
+def fitsviewer():
     """Parses command-line arguments and runs the application."""
     import argparse
     
-    # parser = argparse.ArgumentParser(
-    #     description="fitsviewer to view the headers of fits files.",
-    #     formatter_class=argparse.RawTextHelpFormatter
-    # )
-    #
-    # parser.add_argument('filename',
-    #     #nargs='?',
-    #     default=None,
-    #     type=str,
-    # )
-
-    # parser.add_argument(
-    #     "-w", "--width", 
-    #     type=int, 
-    #     default=800, 
-    #     help="Set the window width in pixels."
-    # )
-    # parser.add_argument(
-    #     "-H", "--height", 
-    #     type=int, 
-    #     default=600, 
-    #     help="Set the window height in pixels."
-    # )
-    # parser.add_argument(
-    #     "-f", "--file", 
-    #     help="Full path to fits file"
-    # )
+    tpipe = 'fitsviewer'
     
-    # parser.add_argument(
-    #     'ifile',
-    #     #nargs='?',
-    #     type=argparse.FileType('r'),
-    # )
+    parser = argparse.ArgumentParser(
+        prog=tpipe,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''\
+            fitviewer
+            -----------------------
+                I have indented it
+                exactly the way
+                I want it
+            '''))
+    parser.add_argument('-f', '--File', nargs='?', type=str,
+                        help=f'{tpipe} input file.')
     
-    # args, uargs = parser.parse_known_args()
+    parser.add_argument(
+        "-w", "--width", 
+        type=int, 
+        default=800, 
+        help="Set the window width in pixels."
+    )
+    
+    parser.add_argument(
+        "-H", "--height", 
+        type=int, 
+        default=600, 
+        help="Set the window height in pixels."
+    )
 
-    print(args.filename)
+    parser.add_argument('filename',
+        nargs='?',
+        default=None,
+        type=str,
+    )
+    args = parser.parse_args()
 
     app = QApplication(sys.argv)
     
@@ -159,16 +159,18 @@ def fitsviewer(args=None):
     global path
     # Get text from file if specified, otherwise use message
     if args.filename:
+        print('fitsviewer: Loading file: ', args.filename, flush=True)
         
         ifile = args.filename
         head, tail = os.path.split(ifile)
         path = head
 
         hdr_text = load_headers(ifile)
-    elif args.file:
+    elif args.File:
         #global path
+        print('fitsviewer: Loading file: ', args.File, flush=True)
         
-        ifile = args.file
+        ifile = args.File
         head, tail = os.path.split(ifile)
         path = head
 
@@ -212,5 +214,5 @@ def load_headers(ifile):
         sys.exit(1)
 
 
-if __name__ == "__main__":
-    fitsviewer()
+# if __name__ == "__main__":
+#     fitsviewer()
