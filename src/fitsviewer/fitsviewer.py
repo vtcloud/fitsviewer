@@ -128,6 +128,13 @@ def fitsviewer():
                 exactly the way
                 I want it
             '''))
+
+    parser.add_argument('filename',
+        nargs='?',
+        default=None,
+        type=str,
+    )
+
     parser.add_argument('-f', '--File', nargs='?', type=str,
                         help=f'{tpipe} input file.')
     
@@ -143,12 +150,6 @@ def fitsviewer():
         type=int, 
         default=600, 
         help="Set the window height in pixels."
-    )
-
-    parser.add_argument('filename',
-        nargs='?',
-        default=None,
-        type=str,
     )
     args = parser.parse_args()
 

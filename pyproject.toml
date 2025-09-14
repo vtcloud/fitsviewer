@@ -30,7 +30,7 @@ exclude = ["fitsviewer*tests*"]
 rest = ["docutils>=0.3", "pack ==1.1, ==1.3"]
 
 [project.scripts]
-fv = "fitsviewer.exec_fv:execfv"
+fv = "fitsviewer.fitsviewer:fitsviewer"
 
 [project.urls]
 "Homepage" = "https://github.com/vtcloud/fitsviewer"
